@@ -3,38 +3,69 @@ import numpy as np
 import seaborn as sns
 
 # Question 1
-# df = pd.read_csv('assignment/data/airbnb_hw.csv', low_memory=False)
-# print( df.shape, '\n')
-# df.head()
+df = pd.read_csv('assignment/data/airbnb_hw.csv', low_memory=False)
+print( df.shape, '\n')
+print(df.head())
 
-# price = df['Price']
-# price.unique()
+price = df['Price']
+price.unique()
 
-# price = df['Price']
-# price = price.str.replace(',','')
-# print(price.unique(),'\n')
-# price = pd.to_numeric(price,errors='coerce') 
-# print(price.unique(),'\n')
-# print('Total missing: ', sum(price.isnull()))
+price = df['Price']
+price = price.str.replace(',','')
+print(price.unique(),'\n')
+price = pd.to_numeric(price,errors='coerce') 
+print(price.unique(),'\n')
+print('Total missing: ', sum(price.isnull()))
 
 # Question 2 
-# df = pd.read_csv('assignment/data/sharks.csv', low_memory=False)
-# df.head()
-# df['Type'].value_counts()
+df = pd.read_csv('assignment/data/sharks.csv', low_memory=False)
+print(df.head())
+df['Type'].value_counts()
 
-# type = df['Type']
+type = df['Type']
 
-# # creating a separte variable for all water sports/activities related attacks 
-# type = type.replace(['Sea Disaster', 'Boat','Boating','Boatomg'],'Watercraft') 
-# print(type.value_counts())
+# creating a separte variable for all water sports/activities related attacks 
+type = type.replace(['Sea Disaster', 'Boat','Boating','Boatomg'],'Watercraft') 
+print(type.value_counts())
 
-# # removing all missing/undefined variables 
-# type = type.replace(['Invalid', 'Questionable','Unconfirmed','Unverified','Under investigation'],np.nan) 
-# print(type.value_counts())
+# removing all missing/undefined variables 
+type = type.replace(['Invalid', 'Questionable','Unconfirmed','Unverified','Under investigation'],np.nan) 
+print(type.value_counts())
 
-# df['Type'] = type 
-# del type 
-# print(df['Type'].value_counts())
+df['Type'] = type 
+del type 
+print(df['Type'].value_counts())
 
 # Question 3
 df = pd.read_parquet('assignment/data/justice_data.parquet', engine='pyarrow')
+print(df.head())
+
+release = df['WhetherDefendantWasReleasedPretrial']
+print(release.unique(),'\n')
+print(release.value_counts(),'\n')
+release = release.replace(9,np.nan) 
+print(release.value_counts(),'\n')
+sum(release.isnull()) 
+df['WhetherDefendantWasReleasedPretrial'] = release 
+del release
+
+# Question 4 
+length = df['ImposedSentenceAllChargeInContactEvent']
+type = df['SentenceTypeAllChargesAtConvictionInContactEvent']
+
+length = pd.to_numeric(length,errors='coerce') 
+length_NA = length.isnull() 
+print(np.sum(length_NA),'\n') 
+
+print(pd.crosstab(length_NA, type), '\n') 
+
+length = length.mask(type == 4, 0) 
+length = length.mask(type == 9, np.nan) 
+
+length_NA = length.isnull() 
+print(pd.crosstab(length_NA, type), '\n')
+print(np.sum(length_NA),'\n') 
+
+df['ImposedSentenceAllChargeInContactEvent'] = length 
+del length
+del type 
